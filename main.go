@@ -122,8 +122,6 @@ func removeMovieByID(id string) (*[]Movie, error) {
 func main() {
 	// declaring a router
 	r := gin.Default()
-	// making a small database
-	// database contains movie title, director name , id.
 	// different end points and their handling functions
 	r.GET("/movies", getMovies)
 	r.GET("/movies/:id", getMovie)
