@@ -1,0 +1,39 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - '**'  # Trigger on push for all branches
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image
+        run: docker build -t shubhmrk/crud-api:latest ../..  # Builds the image from the root directory
+
+      - name: Run Docker Container
+        run: |
+          docker run -d --name crud-api-container -p 8080:8080 shubhmrk/crud-api:latest
+
+      - name: Check Container Health
+        run: |
+          curl --fail http://localhost:8080/movies || exit 1
+
+      - name: Stop and Remove Docker Container
+        run: |
+          docker stop crud-api-container
+          docker rm crud-api-container
+
+      - name: Push Docker Image
+        run: docker push shubhmrk/crud-api:latest

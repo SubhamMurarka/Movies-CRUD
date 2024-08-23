@@ -129,6 +129,5 @@ func main() {
 	r.PUT("/movies/:id", updateMovie)
 	r.DELETE("/movies/:id", deleteMovie)
 	fmt.Printf("Starting server at port 8000\n")
-	r.Run("localhost:8080")
-
+	r.Run("0.0.0.0:8080")
 }
