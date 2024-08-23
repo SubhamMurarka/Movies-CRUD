@@ -3,7 +3,7 @@ name: Build and Deploy to Docker Hub
 on:
   push:
     branches:
-      - '**'  # Trigger on pushes to the master branch
+      - '**'  # Trigger on pushes to any branch
 
 jobs:
   build-and-push:
@@ -21,10 +21,22 @@ jobs:
     - name: Build and Push Docker image
       uses: docker/build-push-action@v2
       with:
-        context: ../../Movies-CRUD/Movies-CRUD
-        file: ../../Movies-CRUD/Movies-CRUD/Dockerfile
+        context: ./Movies-CRUD/Movies-CRUD
+        file: ./Movies-CRUD/Movies-CRUD/Dockerfile
         push: true
         tags: shubhmrk/crud-api:latest
 
     - name: Verify Pushed Image
       run: docker pull shubhmrk/crud-api:latest
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          sudo docker pull shubhmrk/crud-api:latest
+          sudo docker stop crud-app || true
+          sudo docker rm crud-app || true
+          sudo docker run -d --name crud-app -p 8080:8080 shubhmrk/crud-api:latest
