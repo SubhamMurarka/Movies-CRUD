@@ -36,5 +36,5 @@ Before running the project, ensure you have the following installed:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/yourrepository.git
-cd yourrepository
+git clone https://github.com/subhammurarka/Movies-CRUD.git
+cd Movies-CRUD
