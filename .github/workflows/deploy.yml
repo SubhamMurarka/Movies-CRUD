@@ -1,39 +1,30 @@
-name: Docker Image CI
+name: Build and Deploy to Docker Hub
 
 on:
   push:
     branches:
-      - '**'  # Trigger on push for all branches
+      - '**'  # Trigger on pushes to the master branch
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Check Out Repo
+      uses: actions/checkout@v2
 
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker Image
-        run: docker build -t shubhmrk/crud-api:latest ../../Movies-CRUD/Movies-CRUD  # Updated path to nested directory
+    - name: Build and Push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: ../../Movies-CRUD/Movies-CRUD
+        file: ../../Movies-CRUD/Movies-CRUD/Dockerfile
+        push: true
+        tags: shubhmrk/crud-api:latest
 
-      - name: Run Docker Container
-        run: |
-          docker run -d --name crud-api-container -p 8080:8080 shubhmrk/crud-api:latest
-
-      - name: Check Container Health
-        run: |
-          curl --fail http://localhost:8080/movies || exit 1
-
-      - name: Stop and Remove Docker Container
-        run: |
-          docker stop crud-api-container
-          docker rm crud-api-container
-
-      - name: Push Docker Image
-        run: docker push shubhmrk/crud-api:latest
+    - name: Verify Pushed Image
+      run: docker pull shubhmrk/crud-api:latest
