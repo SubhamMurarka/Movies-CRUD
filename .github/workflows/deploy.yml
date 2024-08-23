@@ -13,9 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: List Files in Build Directory
-        run: ls -la ../../Movies-CRUD/Movies-CRUD
-
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
