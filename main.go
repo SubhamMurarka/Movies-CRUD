@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -32,11 +33,13 @@ var movies = []Movie{
 // getMovies func. returns all the movies data in json format
 
 func getMovies(c *gin.Context) {
+	log.Println("fetching all movies")
 	c.IndentedJSON(http.StatusOK, movies)
 }
 
 // deletMovie func. deletes the movie with particualr id.
 func deleteMovie(c *gin.Context) {
+	log.Println("deleting the movie")
 	id := c.Param("id")
 	_, err := getMovieByID(id)
 	if err != nil {
@@ -53,6 +56,7 @@ func deleteMovie(c *gin.Context) {
 
 // getMovie func. returns the movie data with particular id in json format
 func getMovie(c *gin.Context) {
+	log.Println("fetching the movie")
 	id := c.Param("id")
 	movie, err := getMovieByID(id)
 	if err != nil {
@@ -72,6 +76,7 @@ func getMovieByID(id string) (*Movie, error) {
 
 // createMovie func. cretaes the new movie and add to database(movies) and returns the data in json format
 func createMovie(c *gin.Context) {
+	log.Println("creating new movie")
 	var newMovie Movie
 
 	err := c.BindJSON(&newMovie)
@@ -88,6 +93,7 @@ func createMovie(c *gin.Context) {
 
 // updateMovie func. update the existing movie with new data
 func updateMovie(c *gin.Context) {
+	log.Println("updating the movie")
 	id := c.Param("id")
 	_, err := getMovieByID(id)
 	if err != nil {
