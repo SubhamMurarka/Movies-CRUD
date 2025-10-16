@@ -31,37 +31,14 @@ jobs:
     - name: Verify Pushed Image
       run: docker pull shubhmrk/crud-api:latest
 
-    - name: Deploy to EC2 with CloudWatch Logging
+    - name: Deploy to EC2
       uses: appleboy/ssh-action@v0.1.5
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          # 1. Pull the latest image
           sudo docker pull shubhmrk/crud-api:latest
-          
-          # 2. Stop and remove the old container
-          # The '|| true' ensures the step doesn't fail if the container isn't running
           sudo docker stop crud-app || true
           sudo docker rm crud-app || true
-          
-          # 3. Define the CloudWatch variables using GitHub Secrets
-          # NOTE: You MUST create these secrets in your GitHub repo settings.
-          # LOG_GROUP="${{ secrets.CLOUDWATCH_LOG_GROUP }}"
-          # AWS_REGION="${{ secrets.AWS_REGION }}"
-          
-          # Use the container name and a timestamp for a unique Log Stream
-          # LOG_STREAM="crud-app-$(date +%Y%m%d%H%M%S)"
-
-          # 4. Run the new container with awslogs driver and options
-          # PREREQUISITE: The EC2 instance's IAM Role must have 'logs:PutLogEvents' permissions.
-          sudo docker run -d \
-            --name crud-app \
-            -p 8080:8080 \
-            # --log-driver=awslogs \
-            # --log-opt awslogs-region=${AWS_REGION} \
-            # --log-opt awslogs-group=${LOG_GROUP} \
-            # --log-opt awslogs-stream=${LOG_STREAM} \
-            # --log-opt awslogs-create-group=true \
-            shubhmrk/crud-api:latest
+          sudo docker run -d --name crud-app -p 8080:8080 shubhmrk/crud-api:latest
